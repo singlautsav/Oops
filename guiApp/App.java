@@ -88,8 +88,6 @@ class LinkedList{
             }
             ptr = ptr.next;
         }
-
-
     return winner;
     }
 
@@ -246,7 +244,24 @@ public class App {
                 boolean sel5k = rb_5k.isSelected();
                 boolean sel10k = rb_10k.isSelected();
                 boolean sel20k = rb_20k.isSelected();
-
+                if (nameX.equals("")){
+                    JDialog a = new JDialog(frame, "Name Error");
+                    JLabel z = new JLabel("Name Cannot Be empty");
+                    a.add(z);
+                    a.setSize(200, 200);
+                    a.setVisible(true);
+                    return;
+                }
+                try{
+                    Integer.parseInt(timeX);
+                }catch (Exception f){
+                    JDialog b = new JDialog(frame, "dialog Box");
+                    JLabel c = new JLabel("Input Valid Time");
+                    b.add(c);
+                    b.setSize(200, 200);
+                    b.setVisible(true);
+                    return;
+                }
 //                ButtonModel buttonModel = bg_cats.getSelection();
 //                String val = bg_cats.getElements().nextElement().getText();
                 String val;
@@ -300,7 +315,7 @@ public class App {
                             }
                         }
                     }
-                } catch (NullPointerException z){
+                } catch (Exception z){
                     JDialog d = new JDialog(frame, "dialog Box");
                     JLabel l = new JLabel(z+ " :- Not Enough Values Provided to find 2 winners in each category");
                     d.add(l);
