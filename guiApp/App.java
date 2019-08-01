@@ -42,7 +42,7 @@ class LinkedList{
 
             for (int j=0;j<size-i-1;j++){
                 Node next = temp.next;
-                if (next.stu.time<temp.stu.time){
+                if (next.stu.time()<temp.stu.time()){
                     Runner x = temp.stu;
                     temp.stu = next.stu;
                     next.stu = x;
@@ -56,7 +56,7 @@ class LinkedList{
         Node ptr=head.next;
         while(ptr!=null)
         {
-            System.out.print(ptr.stu.name + " " + ptr.stu.time);
+            System.out.print(ptr.stu.name() + " " + ptr.stu.time());
             ptr=ptr.next;
         }
         System.out.println();
@@ -97,8 +97,8 @@ class LinkedList{
 
 
 class Runner{
-    String name;
-    int time;
+    private String name;
+    private int time;
     String category;
     public Runner(){
 
@@ -109,7 +109,12 @@ class Runner{
         this.category = category;
 
     }
-
+    public String name(){
+        return this.name;
+    }
+    public int time(){
+        return this.time;
+    }
 
 }
 
@@ -174,33 +179,35 @@ public class App {
         rb_10k.setSelected(true);
 
 ///////////////////////////////////////////////
-//        Winner of Great Delhi RUn
+//        first in Great Delhi Run
         JPanel p_wgdr = new JPanel();
         p_wgdr.setLayout(new FlowLayout(FlowLayout.CENTER));
         p_main.add(p_wgdr);
 
         JLabel l_wgdr = new JLabel("Great Delhi Run");
         JTextField tf_fgdr = new JTextField();
-        tf_fgdr.setPreferredSize(new Dimension(200,20));
+        tf_fgdr.setPreferredSize(new Dimension(250,20));
 
+//       Second in Great Delhi Run
         JTextField tf_sgdr = new JTextField();
-        tf_sgdr.setPreferredSize(new Dimension(200,20));
+        tf_sgdr.setPreferredSize(new Dimension(250,20));
 
         p_wgdr.add(l_wgdr);
         p_wgdr.add(tf_fgdr);
         p_wgdr.add(tf_sgdr);
 
 ///////////////////////////////////////////////
+//        WInner of Open 10K
         JPanel p_wor = new JPanel();
         p_wor.setLayout(new FlowLayout(FlowLayout.CENTER));
         p_main.add(p_wor);
 
         JLabel l_wor = new JLabel("Open 10K Run");
         JTextField tf_for = new JTextField();
-        tf_for.setPreferredSize(new Dimension(200,20));
+        tf_for.setPreferredSize(new Dimension(250,20));
 
         JTextField tf_sor = new JTextField();
-        tf_sor.setPreferredSize(new Dimension(200,20));
+        tf_sor.setPreferredSize(new Dimension(250,20));
 
         p_wor.add(l_wor);
         p_wor.add(tf_for);
@@ -213,10 +220,10 @@ public class App {
 
         JLabel l_whm = new JLabel("Half Marathon");
         JTextField tf_fhm = new JTextField();
-        tf_fhm.setPreferredSize(new Dimension(200,20));
+        tf_fhm.setPreferredSize(new Dimension(250,20));
 
         JTextField tf_shm = new JTextField();
-        tf_shm.setPreferredSize(new Dimension(200,20));
+        tf_shm.setPreferredSize(new Dimension(250,20));
 
         p_whm.add(l_whm);
         p_whm.add(tf_fhm);
@@ -262,40 +269,43 @@ public class App {
         b_winner.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int k5 = 0;
-                int k10 = 0;
-                int k20 = 0;
-                l.sort();
-                Runner[] winners = l.winners();
-                for (int i = 0; i < winners.length; i++) {
-                    if (winners[i].category.equals("Half Marathon")) {
-                        if (k20==0){
-                            tf_fhm.setText("First " + winners[i].name + " Rs. 2,80,000/-");
-                            k20+=1;
-                        }
-                        else if (k20==1){
-                            tf_shm.setText("Second " + winners[i].name + " Rs. 2,10,000/-");
+                try {
+                    int k5 = 0;
+                    int k10 = 0;
+                    int k20 = 0;
+                    l.sort();
+                    Runner[] winners = l.winners();
+                    for (int i = 0; i < winners.length; i++) {
+                        if (winners[i].category.equals("Half Marathon")) {
+                            if (k20 == 0) {
+                                tf_fhm.setText("First " + winners[i].name() + " Rs. 2,80,000/-");
+                                k20 += 1;
+                            } else if (k20 == 1) {
+                                tf_shm.setText("Second " + winners[i].name() + " Rs. 2,10,000/-");
 
+                            }
+                        } else if (winners[i].category.equals("Open 10K Run")) {
+                            if (k10 == 0) {
+                                tf_for.setText("First " + winners[i].name() + " Rs. 1,90,000/-");
+                                k10 += 1;
+                            } else if (k10 == 1) {
+                                tf_sor.setText("Second " + winners[i].name() + " Rs. 1,50,00/-");
+                            }
+                        } else if (winners[i].category.equals("Great Delhi Run")) {
+                            if (k5 == 0) {
+                                tf_fgdr.setText("First " + winners[i].name() + " Rs. 1,35,000/-");
+                                k5 += 1;
+                            } else if (k5 == 1) {
+                                tf_sgdr.setText("Second " + winners[i].name() + " Rs.1,15,000/-");
+                            }
                         }
                     }
-                    else if (winners[i].category.equals("Open 10K Run")) {
-                        if (k10==0){
-                            tf_for.setText("First " + winners[i].name + " Rs. 1,90,000/-");
-                            k10+=1;
-                        }
-                        else if (k10==1){
-                            tf_sor.setText("Second " + winners[i].name + " Rs. 1,50,00/-");
-                        }
-                    }
-                    else if (winners[i].category.equals("Great Delhi Run")) {
-                        if (k5==0){
-                            tf_fgdr.setText("First " + winners[i].name + " Rs. 1,35,000/-");
-                            k5+=1;
-                        }
-                        else if (k5==1){
-                            tf_sgdr.setText("Second " + winners[i].name + " Rs.1,15,000/-");
-                        }
-                    }
+                } catch (NullPointerException z){
+                    JDialog d = new JDialog(frame, "dialog Box");
+                    JLabel l = new JLabel(z+ " :- Not Enough Values Provided to find 2 winners in each category");
+                    d.add(l);
+                    d.setSize(500, 100);
+                    d.setVisible(true);
                 }
             }
         });
@@ -315,7 +325,7 @@ public class App {
 
 
         frame.add(p_main);
-        frame.setSize(600,300);
+        frame.setSize(1000,500);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
