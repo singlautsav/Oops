@@ -117,12 +117,11 @@ class Runner{
 }
 
 public class App {
-//    public static JPanel p_name;
-//    public static JLabel r_name;
-//    public static JLabel
     public static LinkedList l;
     public static void main(String[] args) {
         l = new LinkedList();
+
+
         JFrame frame = new JFrame("Marathon Runners");
         JPanel p_main = new JPanel();
         p_main.setLayout(new BoxLayout(p_main,BoxLayout.Y_AXIS));
@@ -255,7 +254,7 @@ public class App {
                 try{
                     Integer.parseInt(timeX);
                 }catch (Exception f){
-                    JDialog b = new JDialog(frame, "dialog Box");
+                    JDialog b = new JDialog(frame, "Time Error");
                     JLabel c = new JLabel("Input Valid Time");
                     b.add(c);
                     b.setSize(200, 200);
