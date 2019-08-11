@@ -1,9 +1,8 @@
 package labAP3;
+import java.awt.geom.FlatteningPathIterator;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.*;
-import java.lang.reflect.Array;
 import java.util.*;
 
 
@@ -27,12 +26,14 @@ class Score{
 
 class Studentx {
     private String branch;
-    private ArrayList<Score> sc = new ArrayList<>();
-    private float cgpa;
-    private static int count = 1;
-    private int rollNum;
     private String company;
+    private float cgpa;
+    private int rollNum;
     private boolean isPlaced = false;
+
+    private ArrayList<Score> sc = new ArrayList<>();
+
+    private static int count = 1;
 
     public Studentx(){
 
@@ -91,8 +92,9 @@ class Company {
     BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     private String name;
     private String[] courses;
-    private ArrayList<Studentx> studentPos = new ArrayList<>();
     private ArrayList<Studentx> selectedStudent = new ArrayList<>();
+    private ArrayList<Studentx> shortListedStudents = new ArrayList<>();
+    private List<float[]> list = new ArrayList<>();
     private int numStudents;
     private String appStatus = "Open";
 
@@ -124,6 +126,7 @@ class Company {
     public ArrayList<Studentx> getSelectedStudent(){
         return this.selectedStudent;
     }
+
     public void findStudent(ArrayList<Studentx> x)throws IOException{
 
         for (int i=0; i<x.size();i++){
@@ -138,32 +141,58 @@ class Company {
                 System.out.print("Enter Score for rollNum " + a.getRollNum() + ": ");
                 int sss = Integer.parseInt(br.readLine());
                 a.addScore(sss,this.name);
-                studentPos.add(a);
+                float[] all = new float[3];
+                all[0]=a.getRollNum();
+                all[1]=a.getcgpa();
+                all[2]=sss;
+                list.add(all);
+                shortListedStudents.add(a);
             }
         }
 
     }
 
     public void SelectStudents(){
-        while (true){
-            break;
-        }
-//        Collections.sort(studentPos, new CustomComparator(){
-//            @Override
-//        });
-        int numStus;
-        if (this.numStudents>studentPos.size()){
-            numStus = studentPos.size();
-        }
-        else{
-            numStus = this.numStudents;
+
+        Collections.sort(list,new Comparator<float[]>() {
+            public int compare(float[] r1, float[] r2) {
+                int c = Float.compare(r1[2],r2[2]);
+                if (c==0){
+                    c = Float.compare(r1[1],r2[1]);
+                }
+                return c;
+            }
+
+        });
+        for(int a = 0; a<list.size();a++){
+            System.out.println(list.get(a)[0]);
         }
 
-        for (int i=0;i<numStus;i++){
-            Studentx stu = studentPos.get(i);
-            stu.setIsPlaced();
-            stu.setCompany(this.name);
+//        System.out.println("sorted");
+
+        int stus = numStudents;
+        if (list.size()<stus){
+            stus = list.size();
         }
+        System.out.println("stus: " + stus);
+        for (int x=0;x<stus;x++){
+            int rollNum = (int) list.get(list.size()-x-1)[0];
+//            System.out.println(rollNum);
+            for(int z=0;z<shortListedStudents.size();z++){
+                Studentx stu = shortListedStudents.get(z);
+                if (stu.getRollNum()==rollNum){
+                    stu.setIsPlaced();
+                    stu.setCompany(this.name);
+                    selectedStudent.add(stu);
+                    System.out.println(rollNum);
+                    numStudents-=1;
+                }
+            }
+        }
+        if (numStudents==0){
+            this.appStatus="Closed";
+        }
+
     }
 
 }
@@ -172,10 +201,8 @@ class PlaceCom{
     public static void main(String[] args)throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int n = Integer.parseInt(br.readLine());
-        ArrayList<Studentx> studentsNotPlaced = new ArrayList<Studentx>();
-        ArrayList<Company> companies = new ArrayList<Company>();
-        ArrayList<Studentx> studentsPlaced = new ArrayList<Studentx>();
-        ArrayList<Company> companiesClosed = new ArrayList<Company>();
+        ArrayList<Studentx> studentsNotPlaced = new ArrayList<>();
+        ArrayList<Company> companies = new ArrayList<>();
         for (int i=0; i<n;i++){
             String[] x = br.readLine().split(" ");
             float a = Float.parseFloat(x[0]);
@@ -189,9 +216,10 @@ class PlaceCom{
             if (a.length()==1){
                 int start = Integer.parseInt(a);
                 switch (start){
+
                     case 1:
                         String comName = br.readLine();
-                        System.out.print("Number of Courses: ");
+                        System.out.print("Number of Eligible Courses: ");
                         int numCourses = Integer.parseInt(br.readLine());
                         String[] courses = new String[numCourses];
                         for (int b=0;b<numCourses;b++){
@@ -203,6 +231,7 @@ class PlaceCom{
                         companies.add(com);
                         com.findStudent(studentsNotPlaced);
                         break;
+
                     case 2:
                         for (Iterator<Studentx> iterator = studentsNotPlaced.iterator(); iterator.hasNext();) {
                             Studentx stu = iterator.next();
@@ -212,6 +241,7 @@ class PlaceCom{
                             }
                         }
                         break;
+
                     case 3:
                         for (Iterator<Company> iterator = companies.iterator(); iterator.hasNext();) {
                             Company comp = iterator.next();
@@ -221,9 +251,18 @@ class PlaceCom{
                             }
                         }
                         break;
+
                     case 4:
-                        System.out.println(studentsNotPlaced.size() + " Students Left.");
+                        int countX = 0;
+                        for (int b = 0;b<studentsNotPlaced.size();b++){
+                            Studentx stu = studentsNotPlaced.get(b);
+                            if (!stu.getisPlaced()){
+                                countX+=1;
+                            }
+                        }
+                        System.out.println(countX + " Students Left.");
                         break;
+
                     case 5:
                         for (int coms=0;coms<companies.size();coms++) {
                             Company m = companies.get(coms);
@@ -238,7 +277,9 @@ class PlaceCom{
             else{
                 String[] check = a.split(" ");
                 int start = Integer.parseInt(check[0]);
+
                 switch (start){
+
                     case 6: case 7:
                         String comName = check[1];
                         Company comX = new Company();
@@ -253,7 +294,8 @@ class PlaceCom{
                         }
                         if (flag) {
                             if (start == 6) {
-                                break;
+                                System.out.println("here?");
+                                comX.SelectStudents();
                             } else {
                                 System.out.println(comX.getName());
                                 String[] courses = comX.getCourses();
