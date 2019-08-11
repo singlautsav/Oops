@@ -1,5 +1,4 @@
 package labAP3;
-import java.awt.geom.FlatteningPathIterator;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -176,21 +175,10 @@ class Company {
 
     }
 
-    @Override
-    public String toString(){
-        String s = String.join("\n",
-                this.name,
-                "Course Criteria: ",
-                String.join("\n", this.courses),
-                "Number of Required Students: "+ this.numStudents,
-                "Application Status: "+ this.appStatus
-                );
-        return s;
-    }
-
     public void SelectStudents(){
-        System.out.println("Sorting Started");
+//        System.out.println("Sorting Started");
 
+//      Sort the list of Shortlisted student according to the score in Test and CGPA.
         Collections.sort(list,new Comparator<Object[]>() {
             public int compare(Object[]r1, Object[]r2) {
                 Studentx R1s =(Studentx) r1[0];
@@ -206,14 +194,12 @@ class Company {
             }
 
         });
-        System.out.println("Sorted");
+//        System.out.println("Sorted");
 
-        int stuNeeded = this.numStudents;
+        int stuNeeded = this.numStudents - selectedStudent.size();
         int count = list.size()-1;
-//        System.out.println(stuNeeded);
-//        System.out.println(count);
+
         while(stuNeeded>0 & count>=0){
-//            System.out.println(count);
             Studentx stu = (Studentx) list.get(count)[0];
             if (!stu.getisPlaced()){
                 stu.setCompany(this.name);
@@ -225,9 +211,21 @@ class Company {
             count-=1;
         }
 
-        if (stuNeeded==0){
+        if (this.numStudents==selectedStudent.size()){
             this.appStatus="Closed";
         }
+    }
+
+    @Override
+    public String toString(){
+        String s = String.join("\n",
+                this.name,
+                "Course Criteria: ",
+                String.join("\n", this.courses),
+                "Number of Required Students: "+ this.numStudents,
+                "Application Status: "+ this.appStatus
+        );
+        return s;
     }
 
 }
