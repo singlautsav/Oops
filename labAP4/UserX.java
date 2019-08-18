@@ -8,7 +8,7 @@ interface UserX{
 //    public static int countd=0;
 //    public String getName();
     public void Search()throws IOException;
-    public void seeReward()throws IOException;
+    public int seeReward()throws IOException;
     public void _helper(Object... values)throws IOException;
     public void printX();
 
