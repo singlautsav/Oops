@@ -5,7 +5,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Comparator;
 
 public class App {
 
@@ -19,13 +18,23 @@ public static void main(String[] args) throws IOException {
 class Company {
     private static double earning;
     private Users _User;
-//    private Users _costumer;
     private ArrayList<Merchant> merchs = new ArrayList<>();
     private ArrayList<Customers> customers = new ArrayList<>();
 
-//    public void details(UserX user){
-//        this.printX();
-//    }
+    public Company() {
+        _User = new Users();
+        merchs.add(new Merchant("jack"));
+        merchs.add(new Merchant("john"));
+        merchs.add(new Merchant("james"));
+        merchs.add(new Merchant("jeff"));
+        merchs.add(new Merchant("joseph"));
+    //        System.out.println(merchs.get(0).getName());
+        customers.add(new Customers("aladeen"));
+        customers.add(new Customers("ali"));
+        customers.add(new Customers("bruno"));
+        customers.add(new Customers("borat"));
+        customers.add(new Customers("nobby"));
+    }
 
     public void printMenu() {
         String s = String.join("\n",
@@ -39,20 +48,7 @@ class Company {
         System.out.println(s);
     }
 
-    public Company() {
-        _User = new Users();
-        merchs.add(new Merchant("jack"));
-        merchs.add(new Merchant("john"));
-        merchs.add(new Merchant("james"));
-        merchs.add(new Merchant("jeff"));
-        merchs.add(new Merchant("joseph"));
-//        System.out.println(merchs.get(0).getName());
-        customers.add(new Customers("aladeen"));
-        customers.add(new Customers("ali"));
-        customers.add(new Customers("bruno"));
-        customers.add(new Customers("borat"));
-        customers.add(new Customers("nobby"));
-    }
+
 
     public void startCompany() throws IOException {
 
@@ -145,12 +141,15 @@ class Company {
                         Customers cust = customers.get(x);
                         System.out.println(cust);
                     }
+                    break;
                 case 4:
                     //show balance in companies account
-                    System.out.println(earning);
+                    System.out.println(this.earning);
+                    break;
 
                 case 5:
                     exitAppFlag = false;
+                    break;
 
             }
         }
@@ -158,7 +157,9 @@ class Company {
 
     }
     public void setEarning(double a){
-        earning+=a;
+
+        this.earning+=a;
+        System.out.println(this.earning);
     }
 }
 
@@ -427,10 +428,14 @@ class Customers implements UserX {
                     cost = (price +price*0.005)*quant;
                 }
             }
+            else{
+                cost = (price+price*0.005)*quant;
+                merchReward = price*0.005*quant;
+            }
 
 //            double finalPrice = price + price*0.005;
 //            finalPrice = finalPrice*quant;
-            if (cost>money+reward){
+            if (cost>=money+reward){
                 System.out.println("do not have enough balance");
                 break;
             }
@@ -525,6 +530,7 @@ class Customers implements UserX {
                 z.add(it);
                 z.add(quantity);
                 cart.add(z);
+                checkEx = false;
             }
             else{
                 checkEx = false;
