@@ -24,6 +24,7 @@ class Score{
 
 
 class Studentx {
+
 //    branch: Branch which the student belongs to
 //    company: Company in which student gets placed
 //    cgpa: Cgpa of student
@@ -279,6 +280,7 @@ class PlaceCom{
                         System.out.println(com);
                         com.findStudent(studentsNotPlaced);
                         break;
+
 //                  Case when input is 2,
 //                  It removes all the students that are placed
                     case 2:

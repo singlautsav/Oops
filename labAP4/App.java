@@ -6,6 +6,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
+
+
+//App is the class that helps us start different companies
+// We use the company class to create User(interFace) which incorporates two type of users
+// Customer and Merchant .
+
+
 public class App {
 
 public static void main(String[] args) throws IOException {
@@ -35,7 +42,7 @@ class Company {
         customers.add(new Customers("borat"));
         customers.add(new Customers("nobby"));
     }
-
+// the method below is used to show the menu to be looked at when the application starts
     public void printMenu() {
         String s = String.join("\n",
                 "Welcome To Mercury",
@@ -70,24 +77,27 @@ class Company {
                         int optMerch = Integer.parseInt(br.readLine());
                         switch (optMerch) {
                             case 1:
+                                // adding item
                                 Item itemAdd = new Item();
                                 itemAdd.make();
-//                                merch.addItem(itemAdd);
                                 System.out.println("HI");
                                 _User.addItemX(merch,itemAdd,1);
                                 break;
                             case 2:
+                                //edit item
                                 System.out.println("Choose Item by Code");
-//                                merch.EditItems(1);
                                 _User.helperX(merch,1);
                                 break;
                             case 3:
+                                // Search Item
                                 _User.useSearch(merch);
                                 break;
                             case 4:
+                                // Add offers
                                 _User.helperX(merch,2);
                                 break;
                             case 5:
+                                //Rewards won
                                 _User.seeReward(merch);
                                 break;
                             case 6:
@@ -175,6 +185,7 @@ class Users{
     public void addItemX(UserX _user, Item itemX,int a)throws IOException{
         _user._helper(itemX,a);
     }
+
     public void helperX(UserX _user, int b)throws IOException{
         _user._helper(b);
     }
@@ -211,11 +222,6 @@ class Merchant implements UserX {
         this.id = countd;
     }
 
-//    public void printOpts(ArrayList<Merchant> merchs){
-//        for (int i = 0; i < merchs.size(); i++) {
-//            System.out.println(i+1 + ") " + (merchs.get(i)));
-//        };
-//    }
     public ArrayList<String> getCats(){
         return this.cats;
     }
@@ -226,7 +232,6 @@ class Merchant implements UserX {
             this.addItem(x);
         }
         else if (values.length==1){
-//            Item x = (Item) values[0];
             int x = (int) values[0];
             this.EditItems(x);
         }
@@ -367,9 +372,9 @@ class Merchant implements UserX {
 
 
 class Customers implements UserX {
-
+/// bought .
     private BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    private ArrayList<ArrayList<Item>> bought = new ArrayList<>();
+//    private ArrayList<ArrayList<Item>> bought = new ArrayList<>();
     private ArrayList<ArrayList<Object>> cart = new ArrayList<>();
     private ArrayList<ArrayList<Transact>> transacttions = new ArrayList<>();
     private String name;
@@ -377,7 +382,6 @@ class Customers implements UserX {
     private int reward = 0;
     private int countReward = 0;
     private int id;
-//    private int countd;
 
     private static int countd;
 
@@ -390,6 +394,9 @@ class Customers implements UserX {
         this.id = countd;
     }
 
+
+    /// helper function helps use the commands that are not part of interface
+    // so it decides whether to checkout or displayTransaction.
     public void _helper(Object... values){
         int x = (int) values[0];
         if (x==1){
@@ -432,8 +439,7 @@ class Customers implements UserX {
                 cost = (price+price*0.005)*quant;
                 merchReward = price*0.005*quant;
             }
-
-//            double finalPrice = price + price*0.005;
+//           double finalPrice = price + price*0.005;
 //            finalPrice = finalPrice*quant;
             if (cost>=money+reward){
                 System.out.println("do not have enough balance");
@@ -453,7 +459,7 @@ class Customers implements UserX {
             Company comp = new Company();
             comp.setEarning(2*merchReward);
             itX.add(it);
-            bought.add(itX);
+//            bought.add(itX);
             Transact txx = new Transact(it.getName(),merch.getName(),quant,cost);
             tx.add(txx);
             it.setQuant(quant);
@@ -484,7 +490,12 @@ class Customers implements UserX {
         return this.name;
     }
 
+    //Search for the categories and helps user buy them with the help of checkout function
+    // checkout the product and add to the transaction
+    // in case there is 1on1 offer and the item are less than required the person is given
+    // all the available items at cost of the required cost.
     @Override
+
     public void Search()throws IOException {
         Merchant merchX = new Merchant("Rand");
         ArrayList<ArrayList<Object>> sharedList = merchX.shared;
@@ -558,6 +569,7 @@ class Customers implements UserX {
         return this.reward;
 
     }
+
     public void printMenu(){
         String s = String.join("\n",
                "1) Buy item",
@@ -668,6 +680,7 @@ class Item {
     public int getPrice(){return this.price;}
     public void setQuant(int a){this.quant-=a;}
     public int getQuant(){ return this.quant;}
+
     @Override
     public String toString(){
         String s = (this.id + " " + this.name + " " +this.price+ " " + this.quant+ " " + this.offer+ " " + this.category);
