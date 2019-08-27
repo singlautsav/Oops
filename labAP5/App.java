@@ -195,7 +195,7 @@ class Game{
     public void winMenu(int z){
         System.out.println("You are at"+z+" Location. Choose Path:");
         for (int i = 0;i<al[z].size();i++){
-            System.out.println(i+") Go to location"+ (int) al[z].get(i));
+            System.out.println(i+") Go to location "+ (int) al[z].get(i));
         }
     }
 
@@ -214,7 +214,8 @@ class Game{
             int l = (int) al[num].get(a);
             m = arr[a].monsterX;
         }
-        System.out.println("You are fighting with Xonster of" + m.getlev());
+        System.out.println("You are fighting with Monster of " + m.getlev());
+        int hpDef = m.gethp();
         while (true){
             displayFightMenu();
             int z = Integer.parseInt(br.readLine());
@@ -233,6 +234,7 @@ class Game{
             }
             else if(m.gethp()<=0){
                 System.out.println("We won!!!!");
+                m.sethp(hpDef);
                 h.levelup(x);
                 StartGame(x,g,z);
             }
@@ -400,7 +402,7 @@ class Goblin extends Monster implements Xonster {
 }
 
 class Zombies extends Monster implements Xonster {
-    public final int level = 1;
+    public final int level = 2;
     {this.hp = 150;}
     @Override
     public int attack() {
@@ -421,7 +423,7 @@ class Zombies extends Monster implements Xonster {
 }
 
 class Fiends extends Monster implements Xonster {
-    public final int level = 2;
+    public final int level = 3;
     {this.hp = 200;}
 
     @Override
@@ -443,7 +445,7 @@ class Fiends extends Monster implements Xonster {
 }
 
 class LionFang extends Monster implements Xonster {
-    public final int level = 1;
+    public final int level = 4;
     {this.hp = 250;}
     @Override
     public int attack() {
@@ -497,6 +499,9 @@ class Hero{
         System.out.println("You attacked and inflicted "+ z + "damage");
         System.out.println("Your hp" +getHP()+ "Monsters: "+ m.gethp());
         int att = m.attack();
+        if (att<0){
+            att=0;
+        }
         this.hp -= att;
         System.out.println("Monster Inflicted "+ att + " damage");
         System.out.println("Your hp" +getHP()+ "Monsters: "+ m.gethp());
@@ -723,25 +728,24 @@ class Thief extends Hero implements Xero {
 
     @Override
     public void SpecialPower(Object o) throws IOException {
-//        this.hp+=0.05*hp;
         this.SpecialActive = true;
         Monster x = (Monster) o;
         int mhp = x.gethp();
         int hpx = this.getHP();
-//        System.out.println(hpx);
-//        System.out.println(hp);
-//        System.out.println(this.getHP());
-//        System.out.println(super.getHP());
-//        System.out.println(super.hp);
         int l =(int) Math.round(0.3*mhp);
         this.setHp(hpx+l);
         x.sethp((int) (mhp-(0.3*mhp)));
         System.out.println("Stolen "+ l +" HP");
         System.out.println("Your Hp: "+ this.getHP() +" Monster: "+ x.gethp());
         int att = x.attack();
+        if (att<0){
+            att=0;
+        }
+        this.hp -= att;
         System.out.println("Monster Inflicted "+ att + " damage");
         System.out.println("Your hp" +super.getHP()+ "Monsters: "+ x.gethp());
         this.SpecialActive = false;
+        this.canActivate = false;
         this.countMoves+=1;
 
     }
