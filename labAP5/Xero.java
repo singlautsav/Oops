@@ -7,7 +7,9 @@ interface Xero {
     public void Defense(Xonster m)throws IOException;
     public void SpecialPower(Object o) throws IOException;
     public void Attack(Xonster m) throws IOException;
-    public int getCount();
+    public boolean getCount();
+    public int getHP();
+    public void levelup();
     public String getName();
 
 }

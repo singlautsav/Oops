@@ -159,7 +159,7 @@ class Game{
                     if (xs.equals(s)){
                         Xero x = (Xero) players.get(i).get(0);
                         Graph g = (Graph) players.get(i).get(2);
-                        StartGame(x,g);
+                        StartGame(x,g,-1);
                         playerFound = true;
                         break;
                     }
@@ -192,13 +192,28 @@ class Game{
                 "3) Special Attack");
         System.out.println(s);
     }
+    public void winMenu(int z){
+        System.out.println("You are at"+z+" Location. Choose Path:");
+        for (int i = 0;i<al[z].size();i++){
+            System.out.println(i+") Go to location"+ (int) al[z].get(i));
+        }
+    }
 
-    public void StartGame(Xero x, Graph g) throws  IOException{
+    public void StartGame(Xero x, Graph g, int num) throws  IOException{
         HeroX h = new HeroX();
         Graph.Node[] arr = g.getArr();
-        StartLocation();
-        int a = Integer.parseInt(br.readLine());
-        Xonster m = arr[a].monsterX;
+        Xonster m;
+        if (num==-1) {
+            StartLocation();
+            int a = Integer.parseInt(br.readLine());
+            m = arr[a].monsterX;
+        }
+        else{
+            winMenu(num);
+            int a = Integer.parseInt(br.readLine());
+            int l = (int) al[num].get(a);
+            m = arr[a].monsterX;
+        }
         System.out.println("You are fighting with Xonster of" + m.getlev());
         while (true){
             displayFightMenu();
@@ -211,6 +226,15 @@ class Game{
             }
             else{
                 h.SpecialCheck(x,m);
+            }
+            if (h.getHP(x)<=0){
+                System.out.println("You Lost Sorry");
+                break;
+            }
+            else if(m.gethp()<=0){
+                System.out.println("We won!!!!");
+                h.levelup(x);
+                StartGame(x,g,z);
             }
         }
     }
@@ -304,14 +328,13 @@ class HeroX{
     }
 
     public void SpecialCheck(Xero _hero, Object o)throws IOException{
-//        int x = _hero.getCount();
-//        if (x%3!=0){
-//            System.out.println("Invalid Response");
-//        }
-//        else{
-//            _hero.SpecialPower(o);
-//        }
-        _hero.SpecialPower(o);
+
+        if (!_hero.getCount()){
+            System.out.println("Invalid Response");
+        }
+        else{
+            _hero.SpecialPower(o);
+        }
     }
 
     public void Defense(Xero _hero, Xonster m) throws IOException{
@@ -320,6 +343,15 @@ class HeroX{
 
     public void Attack(Xero _hero, Xonster m) throws IOException{
         _hero.Attack(m);
+    }
+
+    public int getHP(Xero _hero){
+        return _hero.getHP();
+    }
+
+    public void levelup(Xero _hero){
+        _hero.levelup();
+
     }
 }
 
@@ -369,6 +401,7 @@ class Goblin extends Monster implements Xonster {
 
 class Zombies extends Monster implements Xonster {
     public final int level = 1;
+    {this.hp = 150;}
     @Override
     public int attack() {
         return super.attack();
@@ -439,12 +472,13 @@ class Hero{
     public Monster g;
 //    MonsterX x = new MonsterX();
     protected int countMoves = 0;
-    protected int xp = 0;
+    protected int xp = 25;
     protected int hp = 100;
     protected int temphp;
     protected int z;
     protected int a;
-//    protected boolean SpecialActive;
+    protected boolean SpecialActive;
+    protected boolean canActivate;
     protected int moveX = 0;
 //    protected Graph graph = new Graph(10);
 
@@ -467,10 +501,18 @@ class Hero{
         System.out.println("Monster Inflicted "+ att + " damage");
         System.out.println("Your hp" +getHP()+ "Monsters: "+ m.gethp());
         countMoves+=1;
-        moveX+=1;
-        if (moveX==3){
-            this.hp = this.temphp;
+        if (countMoves==3 && !SpecialActive){
+            canActivate=true;
         }
+        else if (SpecialActive && moveX<3){
+            moveX+=1;
+        }
+        else if (moveX>=3){
+            SpecialActive = false;
+            countMoves=0;
+            canActivate=false;
+        }
+
     }
     public void Defense(Xonster m) throws IOException {
         System.out.println("You chose to defend");
@@ -486,18 +528,32 @@ class Hero{
         this.hp-=l;
         System.out.println("Your Hp: " + getHP() + " Moster: " + m.gethp());
         countMoves+=1;
-        moveX+=1;
-        if (moveX==3){
-            restore();
+        if (countMoves>=3 && !SpecialActive){
+            canActivate=true;
         }
+        else if (SpecialActive && moveX<3){
+            moveX+=1;
+        }
+        else if (moveX>=3){
+            SpecialActive = false;
+            countMoves=0;
+            canActivate=false;
+        }
+
     }
 
-    public int getCount(){
-        return this.countMoves;
+    public boolean getCount(){
+        return this.canActivate;
     }
     public  void restore(){
     }
     public void SpecialPower(Object o)throws IOException {
+    }
+    public void levelup(){
+        this.xp+=25;
+        this.hp = 100;
+        System.out.println("Level Up");
+        System.out.println("25 XP awarded");
     }
 }
 
@@ -505,6 +561,13 @@ class Warrior extends Hero implements Xero {
     private final String userName;
     { this.z = 10;
     this.a = 3; }
+
+    @Override
+    public void levelup() {
+        super.levelup();
+        this.z+=1;
+        this.a+=1;
+    }
 
     public Warrior(String x){
         this.userName=x;
@@ -530,15 +593,16 @@ class Warrior extends Hero implements Xero {
     }
 
     @Override
-    public int getCount() {
+    public boolean getCount() {
         return super.getCount();
     }
 
     @Override
     public void SpecialPower(Object o) throws IOException {
+        this.SpecialActive = true;
         this.a+=5;
         this.z +=5;
-//        this.countMoves+=1;
+        this.countMoves+=1;
     }
 
     @Override
@@ -546,6 +610,7 @@ class Warrior extends Hero implements Xero {
         this.a-=5;
         this.z -=5;
         this.moveX=0;
+        this.SpecialActive=false;
     }
 
     @Override
@@ -556,6 +621,7 @@ class Warrior extends Hero implements Xero {
 
 class Mage extends Hero implements Xero {
     private final String userName;
+
     {this.z = 5;
     this.a = 5;}
     public Mage(String s){
@@ -581,22 +647,31 @@ class Mage extends Hero implements Xero {
         super.setHp(x);
     }
     @Override
-    public int getCount() {
+    public boolean getCount() {
         return super.getCount();
     }
 
+    @Override
+    public void levelup() {
+        super.levelup();
+        this.z+=1;
+        this.a+=1;
+    }
 //    @Override
     public void SpecialPower(Object o) throws IOException {
+        this.SpecialActive = true;
         Monster x = (Monster) o;
         x.sethp((int) Math.round(x.gethp()-0.05*(x.gethp())));
         System.out.println("Reduced Monsters Damage by 5%");
         int att = x.attack();
         System.out.println("Monster Inflicted "+ att + " damage");
         System.out.println("Your hp" +super.getHP()+ "Monsters: "+ x.gethp());
+        this.countMoves+=1;
     }
 
     @Override
     public void restore(){
+        this.SpecialActive=false;
         this.moveX=0;
     }
 
@@ -635,13 +710,21 @@ class Thief extends Hero implements Xero {
         super.setHp(x);
     }
     @Override
-    public int getCount() {
+    public boolean getCount() {
         return super.getCount();
+    }
+
+    @Override
+    public void levelup() {
+        super.levelup();
+        this.z+=1;
+        this.a+=1;
     }
 
     @Override
     public void SpecialPower(Object o) throws IOException {
 //        this.hp+=0.05*hp;
+        this.SpecialActive = true;
         Monster x = (Monster) o;
         int mhp = x.gethp();
         int hpx = this.getHP();
@@ -658,11 +741,14 @@ class Thief extends Hero implements Xero {
         int att = x.attack();
         System.out.println("Monster Inflicted "+ att + " damage");
         System.out.println("Your hp" +super.getHP()+ "Monsters: "+ x.gethp());
+        this.SpecialActive = false;
+        this.countMoves+=1;
 
     }
     @Override
     public void restore(){
 //        this.hp -= 0.05*hp;
+        this.SpecialActive=false;
         this.moveX=0;
     }
 
@@ -701,17 +787,27 @@ class Healer extends Hero implements Xero {
     }
 
     @Override
-    public int getCount() {
+    public void levelup() {
+        super.levelup();
+        this.z+=1;
+        this.a+=1;
+    }
+
+    @Override
+    public boolean getCount() {
         return super.getCount();
     }
 
 //    @Override
     public void SpecialPower(Object o) throws IOException {
-        this.hp+=0.05*hp;
+        this.SpecialActive = true;
+        this.hp+=(int)Math.round(0.5*this.hp);
         System.out.println("hp increased by" + 0.05*hp);
+        this.countMoves+=1;
     }
     @Override
     public void restore(){
+        this.SpecialActive=false;
 //        this.hp -= 0.05*hp;
         this.moveX=0;
     }
