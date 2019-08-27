@@ -197,26 +197,47 @@ class Game{
         for (int i = 0;i<al[z].size();i++){
             System.out.println(i+") Go to location "+ (int) al[z].get(i));
         }
+        System.out.println("Enter -1 to Exit");
     }
 
     public void StartGame(Xero x, Graph g, int num) throws  IOException{
         HeroX h = new HeroX();
         Graph.Node[] arr = g.getArr();
+        boolean checkx = true;
         Xonster m;
+        int l;
         if (num==-1) {
             StartLocation();
             int a = Integer.parseInt(br.readLine());
-            m = arr[a].monsterX;
+            if (a==-1){
+                checkx=false;
+                a = 1;
+                m = arr[a].monsterX;
+                l=a;
+            }
+            else {
+                m = arr[a].monsterX;
+                l = a;
+            }
         }
         else{
             winMenu(num);
             int a = Integer.parseInt(br.readLine());
-            int l = (int) al[num].get(a);
-            m = arr[a].monsterX;
+            if (a==-1){
+                checkx=false;
+                a = 1;
+                l = (int) al[num].get(a);
+                m = arr[l].monsterX;
+
+            }
+            else {
+                l = (int) al[num].get(a);
+                m = arr[l].monsterX;
+            }
         }
         System.out.println("You are fighting with Monster of " + m.getlev());
         int hpDef = m.gethp();
-        while (true){
+        while (checkx){
             displayFightMenu();
             int z = Integer.parseInt(br.readLine());
             if (z==1){
@@ -236,7 +257,7 @@ class Game{
                 System.out.println("We won!!!!");
                 m.sethp(hpDef);
                 h.levelup(x);
-                StartGame(x,g,z);
+                StartGame(x,g,l);
             }
         }
     }
