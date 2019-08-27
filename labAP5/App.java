@@ -4,6 +4,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.*;
+import java.util.Random;
+
 
 class App {
     public static void main(String[] args)throws IOException {
@@ -12,8 +15,57 @@ class App {
     }
 
 }
+class Graph{
+    int size = 0;
+
+    public int L;
+    public Node[] arr;
+
+    public class Node{
+        int data;
+        int distance;
+        monster monsterX;
+        Node next;
+        Node(int data){
+            this.data = data;
+            next = null;
+        }
+    }
+
+    Graph(int L){
+        this.L = L;
+        arr = new Node[L];
+        for(int i=0;i<L;i++){
+            Node n = new Node(i);
+            arr[i] = n;
+        }
+    }
+
+    public void edge(int x,int y, monster m){
+        MonsterX z = new MonsterX();
+        Node n = new Node(y);
+        Node n1 = arr[x];
+        while(n1.next!=null){
+            n1 = n1.next;
+        }
+        n1.next = n;
+        n.distance = z.getLevel(m);
+        n.monsterX = m;
+
+        Node nn = new Node(x);
+        Node nn1 = arr[y];
+        while(nn1.next!=null){
+            nn1 = nn1.next;
+        }
+        nn1.next = n;
+        nn.distance = z.getLevel(m);
+        nn.monsterX = m;
+    }
+}
 
 class Game{
+    Random r =  new Random();
+    HeroX _hero = new HeroX();
     BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     ArrayList<Hero> players = new ArrayList<>();
 
@@ -50,6 +102,22 @@ class Game{
         String name = br.readLine();
 
     }
+
+    public monster randomMonster(){
+        int z = r.nextInt(3);
+        if (z==1){
+            monster a = new Goblin();
+            return a;
+        }
+        else if(z==2){
+            monster a = new Zombies();
+            return a;
+        }
+        else{
+            monster a = new Fiends();
+            return a;
+        }
+    }
 }
 
 
@@ -67,24 +135,43 @@ class HeroX{
         }
     }
 
-    public void Defense(hero _hero, Monster m) throws IOException{
+    public void Defense(hero _hero, monster m) throws IOException{
         _hero.Defense(m);
     }
 }
 
 class MonsterX{
     public MonsterX(){
-
     }
 
-    public void Attack(monster m){
-        m.attack();
+    public int getHP(monster m){
+        return m.gethp();
+    }
+
+    public void setHP(monster m, int a){
+        m.sethp(a);
+    }
+
+    public int Attack(monster m){
+        return m.attack();
+    }
+
+    public int getLevel(monster m){
+        return m.getlev();
     }
 }
 
 
 class Monster{
+    Random r = new Random();
     protected int hp = 100;
+
+    public int attack() {
+        double val = r.nextGaussian() +(double) gethp()/8;
+        int finVal = (int) Math.round(val);
+//        int millisDelay = (int) Math.round(val);
+        return finVal;
+    }
     public void sethp(int a){
         this.hp = a;
     }
@@ -92,10 +179,18 @@ class Monster{
         return this.hp;
     }
 
+
 }
 
 
 class Goblin extends Monster implements monster{
+
+    public final int level = 1;
+    @Override
+    public int attack() {
+        return super.attack();
+    }
+
     @Override
     public int gethp() {
         return super.gethp();
@@ -105,9 +200,17 @@ class Goblin extends Monster implements monster{
     public void sethp(int a) {
         super.sethp(a);
     }
+
+    public int getlev(){ return this.level;}
 }
 
 class Zombies extends Monster implements monster{
+    public final int level = 1;
+    @Override
+    public int attack() {
+        return super.attack();
+    }
+
     @Override
     public void sethp(int a) {
         super.sethp(a);
@@ -117,10 +220,18 @@ class Zombies extends Monster implements monster{
     public int gethp() {
         return super.gethp();
     }
+
+    public int getlev(){ return this.level;}
 }
 
 class Fiends extends Monster implements monster{
+    public final int level = 2;
     {this.hp = 200;}
+
+    @Override
+    public int attack() {
+        return super.attack();
+    }
 
     @Override
     public int gethp() {
@@ -131,16 +242,38 @@ class Fiends extends Monster implements monster{
     public void sethp(int a) {
         super.sethp(a);
     }
+
+    public int getlev(){ return this.level;}
 }
 
 class LionFang extends Monster implements monster{
+    public final int level = 1;
     {this.hp = 250;}
+    @Override
+    public int attack() {
+        return 0;
+    }
+
+    @Override
+    public int gethp() {
+        return super.gethp();
+    }
+
+    @Override
+    public void sethp(int a) {
+        super.sethp(a);
+    }
+
+    public int getlev(){ return this.level;}
+
 }
 
 
 
 
 class Hero{
+    Game g =  new Game();
+    MonsterX x = new MonsterX();
     protected int countMoves = 0;
     protected int xp = 0;
     protected int hp = 100;
@@ -149,7 +282,36 @@ class Hero{
     protected int a;
 //    protected boolean SpecialActive;
     protected int moveX = 0;
+    protected Graph graph = new Graph(10);
 
+    public void createGraph(){
+//        monster m = g.randomMonster();
+        graph.edge(1,2,g.randomMonster());
+        graph.edge(1,4,g.randomMonster());
+        graph.edge(1,5,g.randomMonster());
+        graph.edge(1,6,g.randomMonster());
+        graph.edge(2,4,g.randomMonster());
+        graph.edge(2,5,g.randomMonster());
+        graph.edge(2,6,g.randomMonster());
+        graph.edge(2,3,g.randomMonster());
+        graph.edge(3,4,g.randomMonster());
+        graph.edge(3,5,g.randomMonster());
+        graph.edge(3,6,g.randomMonster());
+        graph.edge(4,5,g.randomMonster());
+        graph.edge(4,7,g.randomMonster());
+        graph.edge(4,8,g.randomMonster());
+        graph.edge(4,9,g.randomMonster());
+        graph.edge(5,9,g.randomMonster());
+        graph.edge(5,7,g.randomMonster());
+        graph.edge(5,8,g.randomMonster());
+        graph.edge(5,6,g.randomMonster());
+        graph.edge(6,7,g.randomMonster());
+        graph.edge(6,8,g.randomMonster());
+        graph.edge(6,9,g.randomMonster());
+        graph.edge(7,8,g.randomMonster());
+        graph.edge(9,8,g.randomMonster());
+
+    }
 
     public int getHP(){
         return this.hp;
@@ -159,8 +321,8 @@ class Hero{
     }
 
     public void Attack(monster m)throws IOException{
-        int mhp = m.gethp(m);
-        m.sethp(mhp-z);
+        int mhp = x.getHP(m);
+        x.setHP(m,mhp-z);
         countMoves+=1;
         moveX+=1;
         if (moveX==3){
@@ -168,7 +330,7 @@ class Hero{
         }
     }
     public void Defense(monster m) throws IOException {
-        int z = m.attack();
+        int z = x.Attack(m);
 
         if (z>a){
             z = z-a;
@@ -234,18 +396,17 @@ class Warrior extends Hero implements hero{
     }
 }
 
-
 class Mage extends Hero implements hero{
     {this.z = 5;
     this.a = 5;}
 
     @Override
-    public void Attack(Monster m) throws IOException {
+    public void Attack(monster m) throws IOException {
         super.Attack(m);
     }
 
     @Override
-    public void Defense(Monster m) throws IOException {
+    public void Defense(monster m) throws IOException {
         super.Defense(m);
     }
 
@@ -280,12 +441,12 @@ class Thief extends Hero implements hero{
     this.a = 4;}
 
     @Override
-    public void Attack(Monster m) throws IOException {
+    public void Attack(monster m) throws IOException {
         super.Attack(m);
     }
 
     @Override
-    public void Defense(Monster m) throws IOException {
+    public void Defense(monster m) throws IOException {
         super.Defense(m);
     }
 
@@ -319,18 +480,17 @@ class Thief extends Hero implements hero{
 
 }
 
-
 class Healer extends Hero implements hero{
     {this.z = 4;
     this.a = 8;}
 
     @Override
-    public void Attack(Monster m) throws IOException {
+    public void Attack(monster m) throws IOException {
         super.Attack(m);
     }
 
     @Override
-    public void Defense(Monster m) throws IOException {
+    public void Defense(monster m) throws IOException {
         super.Defense(m);
     }
 
