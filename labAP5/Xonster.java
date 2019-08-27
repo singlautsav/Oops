@@ -1,6 +1,6 @@
 package labAP5;
 
-interface monster {
+interface Xonster {
     public int gethp();
     public void sethp(int a);
     public int attack();
