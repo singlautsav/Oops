@@ -238,33 +238,33 @@ class Game{
             }
         }
         System.out.println("You are fighting with Monster of " + m.getlev());
-
-        if (skActive){
-            SideKick s = x.getSideKick();
-            String a ;
-            System.out.println("Your selected SideKick is " + s.getName());
-            if (s.getName().equals("Minions")){
-                System.out.println("type c to clone & f to fight");
-                a = br.readLine();
-            }
-            else if(s.getName().equals("Knight")){
-                if(m.getlev()!=2){
-                    System.out.println("Wont be able to use Special Power");
-                    a= "";
-                }
-                else{
-                    System.out.println("type c to Use Special Power & f to fight");
+        if (skActive) {
+            System.out.println("Do you want sideKick |yes/no|");
+            String i = br.readLine();
+            if (i.equals("yes")) {
+                SideKick s = x.getSideKick();
+                String a;
+                System.out.println("Your selected SideKick is " + s.getName());
+                if (s.getName().equals("Minion")) {
+                    System.out.println("type c to clone & f to fight");
                     a = br.readLine();
+                } else if (s.getName().equals("Knight")) {
+                    if (m.getlev() != 2) {
+                        System.out.println("Wont be able to use Special Power");
+                        a = "";
+                    } else {
+                        System.out.println("type c to Use Special Power & f to fight");
+                        a = br.readLine();
+                    }
+                } else {
+                    a = "";
                 }
-            }
-            else{
-                a = "";
-            }
 
-            if (a.equals("c")){
-                h.setSideKick(x);
-            }
+                if (a.equals("c")) {
+                    h.setSideKick(x);
+                }
 
+            }
         }
         int hpDef = m.gethp();
         while (checkx){
@@ -287,6 +287,8 @@ class Game{
                 System.out.println("We won!!!!");
                 m.sethp(hpDef);
                 h.incxp(x);
+                SideKick ll = h.getSideKick(x);
+                ll.levup();
                 skActive = specialActive(x);
                 h.reset(x);
 //                specialActive();
@@ -606,6 +608,7 @@ abstract class Hero{
 //    protected Graph graph = new Graph(10);
 {
     sk = new ArrayList<>();
+    skSelected = new ArrayList<>();
 }
 
 
@@ -624,7 +627,7 @@ abstract class Hero{
         return  this.xp;
     }
     public void Attack(Xonster m)throws IOException{
-        System.out.println("SpecialActive "+ SpecialActive + " CanActivate " + canActivate + " num Moves " + moveX+ " Special counter "+ specialMoveCounter);
+//        System.out.println("SpecialActive "+ SpecialActive + " CanActivate " + canActivate + " num Moves " + moveX+ " Special counter "+ specialMoveCounter);
         if (SpecialActive){
             this.SpecialPower(m);
         }
@@ -647,16 +650,16 @@ abstract class Hero{
         System.out.println("Your hp" +getHP()+ "Monsters: "+ m.gethp());
 
         int attx = (int) Math.round(1.5*att);
+        System.out.println(skSelected.size());
         if (skSelected.size()!=0){
             for (SideKick s:skSelected) {
                 s.setHp(attx);
                 System.out.println("SideKicks HP: "+  s.getHp());
             }
-        }
-
-        if(skSelected.get(0).getHp()<=0){
-            skSelected.clear();
-            sk.remove(sk.size()-1);
+            if(skSelected.get(0).getHp()<=0){
+                skSelected.clear();
+                sk.remove(sk.size()-1);
+            }
         }
 
         moveX+=1;
@@ -670,7 +673,7 @@ abstract class Hero{
 
     }
     public void Defense(Xonster m) throws IOException {
-        System.out.println("SpecialActve "+ SpecialActive + " CanActivate " + canActivate + " num Moves " + moveX + " Special counter "+ specialMoveCounter);
+//        System.out.println("SpecialActve "+ SpecialActive + " CanActivate " + canActivate + " num Moves " + moveX + " Special counter "+ specialMoveCounter);
         if (SpecialActive){
             this.SpecialPower(m);
         }
@@ -679,10 +682,11 @@ abstract class Hero{
         if (D){
 //            k = 5;
         }
-        System.out.println("Monster Attack reduced by " + this.a+k);
+        int kll = k+this.a;
+        System.out.println("Monster Attack reduced by " + (kll));
         int l = m.attack();
         if (l>a){
-            l -=(a+k);
+            l -=(kll);
         }
         else{
             l =0;
@@ -724,6 +728,8 @@ abstract class Hero{
         canActivate = false;
         hp = prevHp;
         skSelected.clear();
+        A=false;
+        D=false;
     }
 
     public SideKick getSideKick(){
@@ -743,15 +749,22 @@ abstract class Hero{
         Knight k = new Knight(2);
         SideKick s =  skSelected.get(0);
         if (s.equals(m) && !s.isUsed){
+            this.A = true;
             s.isUsed = true;
             Minions a = (Minions) s;
             skSelected.add(a.clone());
             skSelected.add(a.clone());
             skSelected.add(a.clone());
+            System.out.println("Cloned");
         }
         else if(s.equals(k) && !s.isUsed){
             s.isUsed=true;
+            this.D = true;
 //            this.a+=5;
+        }
+        else{
+            System.out.println("No Effect");
+
         }
     }
 }
@@ -1195,6 +1208,7 @@ abstract class SideKick implements Cloneable{
         this.xp+=2;
         this.a +=1;
         this.hp =100;
+        System.out.println("Yayy Level Up");
     }
 
     public int getXp(){
