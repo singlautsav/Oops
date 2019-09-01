@@ -14,5 +14,9 @@ interface Xero {
     public String getName();
     public int getxp();
     public void addSide(SideKick s);
+    public void reset();
+    public SideKick getSideKick();
+    public void setSideKick() throws CloneNotSupportedException;
+//    public void setSideNorm();
 
 }

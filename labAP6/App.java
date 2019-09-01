@@ -3,13 +3,13 @@ package labAP6;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Random;
+import java.lang.module.FindException;
+import java.util.*;
 //import labAP5.Xonster;
 
 
 class App {
-    public static void main(String[] args)throws IOException {
+    public static void main(String[] args)throws IOException,CloneNotSupportedException {
         Game g = new Game();
         g.run();
     }
@@ -141,7 +141,7 @@ class Game{
     public Game(){
     }
 
-    public void run()throws IOException {
+    public void run()throws IOException,CloneNotSupportedException {
 
         boolean isExiting = true;
         while(isExiting) {
@@ -201,7 +201,7 @@ class Game{
         System.out.println("Enter -1 to Exit");
     }
 
-    public void StartGame(Xero x, Graph g, int num) throws  IOException{
+    public void StartGame(Xero x, Graph g, int num) throws  IOException,CloneNotSupportedException{
         HeroX h = new HeroX();
 
         Graph.Node[] arr = g.getArr();
@@ -239,6 +239,33 @@ class Game{
         }
         System.out.println("You are fighting with Monster of " + m.getlev());
 
+        if (skActive){
+            SideKick s = x.getSideKick();
+            String a ;
+            System.out.println("Your selected SideKick is " + s.getName());
+            if (s.getName().equals("Minions")){
+                System.out.println("type c to clone & f to fight");
+                a = br.readLine();
+            }
+            else if(s.getName().equals("Knight")){
+                if(m.getlev()!=2){
+                    System.out.println("Wont be able to use Special Power");
+                    a= "";
+                }
+                else{
+                    System.out.println("type c to Use Special Power & f to fight");
+                    a = br.readLine();
+                }
+            }
+            else{
+                a = "";
+            }
+
+            if (a.equals("c")){
+                h.setSideKick(x);
+            }
+
+        }
         int hpDef = m.gethp();
         while (checkx){
             displayFightMenu();
@@ -261,6 +288,7 @@ class Game{
                 m.sethp(hpDef);
                 h.incxp(x);
                 skActive = specialActive(x);
+                h.reset(x);
 //                specialActive();
                 StartGame(x,g,l);
             }
@@ -390,6 +418,7 @@ class Game{
 
 }
 
+
 class HeroX{
     public HeroX(){
     }
@@ -430,6 +459,18 @@ class HeroX{
 
     public void addSide(Xero _hero, SideKick s){
         _hero.addSide(s);
+    }
+
+    public void reset(Xero _hero){
+        _hero.reset();
+    }
+
+    public SideKick getSideKick(Xero _hero){
+        return _hero.getSideKick();
+    }
+
+    public void setSideKick(Xero _hero) throws CloneNotSupportedException{
+        _hero.setSideKick();
     }
 }
 
@@ -552,12 +593,14 @@ abstract class Hero{
 //    protected int temphp;
     protected int z;
     protected int a;
+    protected boolean A;
+    protected boolean D;
     protected boolean SpecialActive;
     protected boolean canActivate;
     protected int moveX = 0;
     protected int specialMoveCounter = 0;
 
-    protected boolean isSideKickActive;
+//    protected boolean isSideKickActive;
     protected ArrayList<SideKick> sk;
     protected ArrayList<SideKick> skSelected;
 //    protected Graph graph = new Graph(10);
@@ -581,13 +624,19 @@ abstract class Hero{
         return  this.xp;
     }
     public void Attack(Xonster m)throws IOException{
-        System.out.println("SpecialActve "+ SpecialActive + " CanActivate " + canActivate + " num Moves " + moveX+ " Special counter "+ specialMoveCounter);
+        System.out.println("SpecialActive "+ SpecialActive + " CanActivate " + canActivate + " num Moves " + moveX+ " Special counter "+ specialMoveCounter);
         if (SpecialActive){
             this.SpecialPower(m);
         }
         int mhp = m.gethp();
         m.sethp(mhp-z);
-        System.out.println("You attacked and inflicted "+ z + "damage");
+        System.out.println("You attacked and inflicted "+ z + " damage");
+
+        if (A){
+            for (SideKick l:skSelected) {
+                l.attack(m);
+            }
+        }
         System.out.println("Your hp" +getHP()+ "Monsters: "+ m.gethp());
         int att = m.attack();
         if (att<0){
@@ -596,6 +645,20 @@ abstract class Hero{
         this.hp -= att;
         System.out.println("Monster Inflicted "+ att + " damage");
         System.out.println("Your hp" +getHP()+ "Monsters: "+ m.gethp());
+
+        int attx = (int) Math.round(1.5*att);
+        if (skSelected.size()!=0){
+            for (SideKick s:skSelected) {
+                s.setHp(attx);
+                System.out.println("SideKicks HP: "+  s.getHp());
+            }
+        }
+
+        if(skSelected.get(0).getHp()<=0){
+            skSelected.clear();
+            sk.remove(sk.size()-1);
+        }
+
         moveX+=1;
 //        moveX+=1;
         if (moveX>2){
@@ -612,10 +675,14 @@ abstract class Hero{
             this.SpecialPower(m);
         }
         System.out.println("You chose to defend");
-        System.out.println("Monster Attack reduced by " + this.a);
+        int k = 0;
+        if (D){
+//            k = 5;
+        }
+        System.out.println("Monster Attack reduced by " + this.a+k);
         int l = m.attack();
         if (l>a){
-            l -=a;
+            l -=(a+k);
         }
         else{
             l =0;
@@ -635,8 +702,8 @@ abstract class Hero{
     public boolean getCount(){
         return this.canActivate;
     }
-    public  void restore(){
-    }
+//    public  void restore(){
+//    }
     public abstract void SpecialPower(Object o)throws IOException;
     public void levelup(){
 //        this.xp+=20;
@@ -650,6 +717,43 @@ abstract class Hero{
         sk.add(s);
     }
 
+    public void reset(){
+        moveX = 0;
+        specialMoveCounter = 0;
+        SpecialActive = false;
+        canActivate = false;
+        hp = prevHp;
+        skSelected.clear();
+    }
+
+    public SideKick getSideKick(){
+        Collections.sort(sk,new Comparator<SideKick>(){
+            @Override
+            public int compare(SideKick s1, SideKick s2){
+                return Integer.compare(s1.getXp(),s2.getXp());
+            }
+        });
+
+        skSelected.add(sk.get(sk.size()-1));
+        return skSelected.get(0);
+    }
+
+    public void setSideKick()throws CloneNotSupportedException{
+        Minions m = new Minions(2);
+        Knight k = new Knight(2);
+        SideKick s =  skSelected.get(0);
+        if (s.equals(m) && !s.isUsed){
+            s.isUsed = true;
+            Minions a = (Minions) s;
+            skSelected.add(a.clone());
+            skSelected.add(a.clone());
+            skSelected.add(a.clone());
+        }
+        else if(s.equals(k) && !s.isUsed){
+            s.isUsed=true;
+//            this.a+=5;
+        }
+    }
 }
 
 class Warrior extends Hero implements Xero {
@@ -657,6 +761,21 @@ class Warrior extends Hero implements Xero {
 //    boolean activatePower;
     { this.z = 10;
     this.a = 3; }
+
+    @Override
+    public void setSideKick()throws CloneNotSupportedException {
+        super.setSideKick();
+    }
+
+    @Override
+    public SideKick getSideKick() {
+        return super.getSideKick();
+    }
+
+    @Override
+    public void reset() {
+        super.reset();
+    }
 
     @Override
     public void addSide(SideKick s) {
@@ -721,14 +840,6 @@ class Warrior extends Hero implements Xero {
     }
 
     @Override
-    public void restore(){
-        this.a-=5;
-        this.z -=5;
-        this.moveX=0;
-        this.SpecialActive=false;
-    }
-
-    @Override
     public String getName(){
         return this.userName;
     }
@@ -752,6 +863,21 @@ class Mage extends Hero implements Xero {
     this.a = 5;}
     public Mage(String s){
         this.userName = s;
+    }
+
+    @Override
+    public void setSideKick()throws CloneNotSupportedException {
+        super.setSideKick();
+    }
+
+    @Override
+    public SideKick getSideKick() {
+        return super.getSideKick();
+    }
+
+    @Override
+    public void reset() {
+        super.reset();
     }
 
     @Override
@@ -815,12 +941,6 @@ class Mage extends Hero implements Xero {
     }
 
     @Override
-    public void restore(){
-        this.SpecialActive=false;
-        this.moveX=0;
-    }
-
-    @Override
     public String getName(){
         return this.userName;
     }
@@ -846,6 +966,21 @@ class Thief extends Hero implements Xero {
     this.hp = 100;}
     public Thief(String name){
         this.userName = name;
+    }
+
+    @Override
+    public void setSideKick()throws CloneNotSupportedException {
+        super.setSideKick();
+    }
+
+    @Override
+    public void reset() {
+        super.reset();
+    }
+
+    @Override
+    public SideKick getSideKick() {
+        return super.getSideKick();
     }
 
     @Override
@@ -918,12 +1053,6 @@ class Thief extends Hero implements Xero {
         }
 
     }
-    @Override
-    public void restore(){
-//        this.hp -= 0.05*hp;
-        this.SpecialActive=false;
-        this.moveX=0;
-    }
 
     @Override
     public String getName(){
@@ -948,6 +1077,21 @@ class Healer extends Hero implements Xero {
     this.a = 8;}
     public Healer(String s){
             this.userName = s;
+    }
+
+    @Override
+    public SideKick getSideKick() {
+        return super.getSideKick();
+    }
+
+    @Override
+    public void setSideKick()throws CloneNotSupportedException {
+        super.setSideKick();
+    }
+
+    @Override
+    public void reset() {
+        super.reset();
     }
 
     @Override
@@ -1010,12 +1154,7 @@ class Healer extends Hero implements Xero {
         }
     }
 
-    @Override
-    public void restore(){
-        this.SpecialActive=false;
-//        this.hp -= 0.05*hp;
-        this.moveX=0;
-    }
+
     @Override
     public String getName(){
         return this.userName;
@@ -1037,17 +1176,19 @@ class Healer extends Hero implements Xero {
 
 
 
-abstract class SideKick{
+abstract class SideKick implements Cloneable{
+    boolean isUsed;
     protected int xp;
     protected int hp;
     protected int a;
     protected int z;
+    public String name;
 
     public void attack(Xonster m){
         int mhp = m.gethp();
         m.sethp(mhp-this.a);
         System.out.println("SideKick Attacked and inflicted a damage "+this.a+" to the monster");
-//
+        System.out.println("SideKick HP" + this.hp);
     };
 
     public void levup(){
@@ -1056,9 +1197,43 @@ abstract class SideKick{
         this.hp =100;
     }
 
+    public int getXp(){
+        return this.xp;
+    }
+
+    public String getName(){
+        return  this.name;
+    }
+
+    public int getHp(){
+        return this.hp;
+    }
+    public void setHp(int a){
+        this.hp -=a;
+    }
+
+    @Override
+    public boolean equals(Object o1){
+        if (o1!=null && getClass()==o1.getClass()){
+            SideKick s = (SideKick) o1;
+            return (s.getName().equals(this.getName()));
+        }
+        else {
+            return false;
+        }
+    }
+
+    public SideKick clone()throws CloneNotSupportedException{
+        SideKick p = (SideKick) super.clone();
+        return p;
+    }
+
 }
 
-class Minions extends SideKick{
+class Minions extends SideKick implements Cloneable{
+    {
+        this.name = "Minion";
+    }
 
 //    {int z = 8}
     public Minions(int v){
@@ -1077,9 +1252,52 @@ class Minions extends SideKick{
     public void levup() {
         super.levup();
     }
+
+    @Override
+    public int getXp() {
+        return super.getXp();
+    }
+
+    @Override
+    public String getName() {
+        return super.getName();
+    }
+
+    @Override
+    public void setHp(int a) {
+        super.setHp(a);
+    }
+
+    @Override
+    public int getHp() {
+        return super.getHp();
+    }
+
+    @Override
+    public boolean equals(Object o1){
+        if (o1!=null && getClass()==o1.getClass()){
+            Minions o = (Minions) o1;
+            return (super.equals(o1) && o.getName().equals(this.name));
+        }
+        else {
+            return false;
+        }
+    }
+
+    public Minions clone(){
+        try{
+            Minions copy = (Minions) super.clone();
+            return copy;
+        }catch (CloneNotSupportedException e){
+            return null;
+        }
+    }
 }
 
-class Knight extends SideKick{
+class Knight extends SideKick implements Cloneable{
+    {
+        this.name = "Knight";
+    }
 
     public Knight(int v){
         this.xp = 8;
@@ -1087,6 +1305,16 @@ class Knight extends SideKick{
         this.a = 2+ (int) Math.round(v*0.5);
         this.hp =100;
     };
+
+    @Override
+    public void setHp(int a) {
+        super.setHp(a);
+    }
+
+    @Override
+    public int getHp() {
+        return super.getHp();
+    }
 
     @Override
     public void attack(Xonster m) {
@@ -1097,4 +1325,34 @@ class Knight extends SideKick{
     public void levup() {
         super.levup();
     }
+
+    @Override
+    public int getXp() {
+        return super.getXp();
+    }
+
+    @Override
+    public String getName() {
+        return super.getName();
+    }
+    @Override
+    public boolean equals(Object o1){
+        if (o1!=null && getClass()==o1.getClass()){
+            Knight o = (Knight) o1;
+            return (super.equals(o1) && o.getName().equals(this.name));
+        }
+        else {
+            return false;
+        }
+    }
+
+    public Knight copy(){
+        try {
+            Knight copy = (Knight) super.clone();
+            return copy;
+        }catch (CloneNotSupportedException e){
+            return null;
+        }
+    }
+
 }
