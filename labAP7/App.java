@@ -62,7 +62,7 @@ class Game{
     public static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     ArrayList<tileX> boardX;
     private int playerTile = 1;
-    private int numRoll = 0;
+    private int numRoll = 1;
     private int rollVal;
     private Snake objs = new Snake(0);
     private Vulture objv = new Vulture(0);
@@ -95,31 +95,36 @@ class Game{
         System.out.println("");
         System.out.println("Good News: There are "+ x.getTotalTrampoline() +" Trampoline");
         System.out.println("");
-//        int player = 0;
-        while (playerTile<val){
 
-            if (playerTile==1){
-                zerotile();
-            }
-            else{
-                rollVal = rollDice();
-                soutX();
-                playerTile+=rollVal;
-                System.out.print(" landed on "+ this.playerTile);
+        System.out.println("Transfered Controls to the Computer, Hit ENTER to start");
+        String a = br.readLine();
+//        int player = 0;
+        if (a.equals("")) {
+            System.out.println("Starting Game =====================================>");
+            while (playerTile < val) {
+
+                if (playerTile == 1) {
+                    zerotile();
+                } else {
+                    rollVal = rollDice();
+                    soutX();
+                    playerTile += rollVal;
+                    System.out.print(" landed on " + this.playerTile);
 //                exceptionCheck();
-                if (playerTile<100) {
-                    try {
-                        exceptionCheck();
-                    } catch (WinningException e) {
-                        System.out.println(e.getMessage());
+                    if (playerTile < this.val) {
+                        try {
+                            exceptionCheck();
+                        } catch (WinningException e) {
+                            System.out.println(e.getMessage());
+                        }
+                    } else {
+                        System.out.println(WinMessage());
                     }
                 }
-                else{
-                    System.out.println(WinMessage());
-                }
-            }
 
+            }
         }
+        else System.out.println("Incorrect Input, Exiting the Game");
 
     }
 
@@ -145,19 +150,20 @@ class Game{
 
         tileX obj = boardX.get(this.playerTile);
         this.playerTile+=obj.getval();
+//        System.out.println(this.playerTile);
         numRoll+=1;
         if (playerTile<1){
             playerTile=1;
             System.out.println("Josh moved to to tile 1");
         }
-        else if(playerTile>=100){
-            playerTile=100;
-            System.out.println("landed on 100, Wait for winning announcement");
+        else if(playerTile>=this.val){
+            playerTile=this.val;
+            System.out.println("landed on, "+ this.val+", Wait for winning announcement");
             throw new WinningException(this.WinMessage());
         }
     }
 
-    public void zerotile()throws WinningException{
+    public void zerotile(){
         rollVal = rollDice();
         if (rollVal==6){
             soutX();
@@ -187,37 +193,28 @@ class Game{
     }
 
     private void soutX(){
-        System.out.print("[Roll-"+this.numRoll+"]: "+x.name+ " rolled "+ rollVal+ " at "+ this.playerTile);
+        System.out.print("[Roll-"+this.numRoll+"]: "+x.name+ " rolled "+ rollVal+ " at Tile-"+ this.playerTile);
     }
 
     private void shakeIt()throws SnakeBiteException,VultureBiteException,CricketBiteException,TrampolineException, WinningException{
         System.out.println(" Trying to shake the Tile-"+this.playerTile);
         tileX obj = boardX.get(this.playerTile);
-//        playerTile+=obj.getval();
-//        numRoll+=1;
-////        if (this.playerTile<1){
-//            playerTile=1;
-//            System.out.println("Josh moved to to tile 1");
-//        }
-//        else if(playerTile>100){
-//            playerTile=100;
-//            System.out.println("landed on 100, Wait for winning announcement");
-//        }
+
         if (obj.getClass().equals(objs.getClass())){
             this.numSnake+=1;
 
-            throw new SnakeBiteException("hisss...! I am Snake, you go back " + obj.getval()+ " Steps") ;
+            throw new SnakeBiteException("hisss...! I am Snake, you go back " + (-obj.getval())+ " Steps") ;
 //            numSnake+=1;
         }
         else if(obj.getClass().equals(objv.getClass())){
             this.numVultures+=1;
 
-            throw new VultureBiteException("Yapping..! I am a Vulture, you go back "+ obj.getval()+ " Steps");
+            throw new VultureBiteException("Yapping..! I am a Vulture, you go back "+ (-obj.getval())+ " Steps");
 //            numVultures+=1;
         }
         else if(obj.getClass().equals(objc.getClass())){
             this.numCrickets+=1;
-            throw new CricketBiteException("Chirp..! I am a Cricket, you go back "+ obj.getval()+ " Steps");
+            throw new CricketBiteException("Chirp..! I am a Cricket, you go back "+ -obj.getval()+ " Steps");
 //            numCrickets+=1;
         }
         else if(obj.getClass().equals(objt.getClass())){
@@ -277,15 +274,15 @@ class Player{
                 boardX.add(a);
                 totalSnakes+=1;
             }
-            else if(x==1){
+            else if(x==3){
                 tileX a = new Cricket(cn);
                 boardX.add(a);
                 totalCricket+=1;
-            }else if(x==2){
+            }else if(x==1){
                 tileX a = new Vulture(vn);
                 boardX.add(a);
                 totalVulture+=1;
-            }else if(x==3){
+            }else if(x==2){
                 tileX a = new Trampoline(tn);
                 boardX.add(a);
                 totalTrampoline+=1;
