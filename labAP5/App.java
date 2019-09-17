@@ -78,13 +78,13 @@ class Graph{
     }
 
     public Node search(int x){
-       return arr[x];
+        return arr[x];
     }
 }
 
 class Game{
     ArrayList[] al = new ArrayList[11];
-//    Monster g = new Monster();
+    //    Monster g = new Monster();
 //    Random r =  new Random();
 //    HeroX _hero = new HeroX();
     BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -491,9 +491,9 @@ class LionFang extends Monster implements Xonster {
 
 
 class Hero{
-//    private String userName;
+    //    private String userName;
     public Monster g;
-//    MonsterX x = new MonsterX();
+    //    MonsterX x = new MonsterX();
     protected int countMoves = 0;
     protected int xp = 25;
     protected int hp = 100;
@@ -586,7 +586,7 @@ class Hero{
 class Warrior extends Hero implements Xero {
     private final String userName;
     { this.z = 10;
-    this.a = 3; }
+        this.a = 3; }
 
     @Override
     public void levelup() {
@@ -649,7 +649,7 @@ class Mage extends Hero implements Xero {
     private final String userName;
 
     {this.z = 5;
-    this.a = 5;}
+        this.a = 5;}
     public Mage(String s){
         this.userName = s;
     }
@@ -683,7 +683,7 @@ class Mage extends Hero implements Xero {
         this.z+=1;
         this.a+=1;
     }
-//    @Override
+    //    @Override
     public void SpecialPower(Object o) throws IOException {
         this.SpecialActive = true;
         Monster x = (Monster) o;
@@ -711,8 +711,8 @@ class Mage extends Hero implements Xero {
 class Thief extends Hero implements Xero {
     private final String userName;
     {this.z = 6;
-    this.a = 4;
-    this.hp = 100;}
+        this.a = 4;
+        this.hp = 100;}
     public Thief(String name){
         this.userName = name;
     }
@@ -787,9 +787,9 @@ class Thief extends Hero implements Xero {
 class Healer extends Hero implements Xero {
     private final String userName;
     {this.z = 4;
-    this.a = 8;}
+        this.a = 8;}
     public Healer(String s){
-            this.userName = s;
+        this.userName = s;
     }
     @Override
     public void Attack(Xonster m) throws IOException {
@@ -823,7 +823,7 @@ class Healer extends Hero implements Xero {
         return super.getCount();
     }
 
-//    @Override
+    //    @Override
     public void SpecialPower(Object o) throws IOException {
         this.SpecialActive = true;
         this.hp+=(int)Math.round(0.5*this.hp);
@@ -842,17 +842,6 @@ class Healer extends Hero implements Xero {
     }
 
 }
-
-
-
-
-
-
-
-
-
-
-
 
 
 
