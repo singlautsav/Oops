@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 public class App {
 
-public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException {
 //    System.out.println("HI");
         Company c = new Company();
         c.startCompany();
@@ -35,14 +35,14 @@ class Company {
         merchs.add(new Merchant("james"));
         merchs.add(new Merchant("jeff"));
         merchs.add(new Merchant("joseph"));
-    //        System.out.println(merchs.get(0).getName());
+        //        System.out.println(merchs.get(0).getName());
         customers.add(new Customers("aladeen"));
         customers.add(new Customers("ali"));
         customers.add(new Customers("bruno"));
         customers.add(new Customers("borat"));
         customers.add(new Customers("nobby"));
     }
-// the method below is used to show the menu to be looked at when the application starts
+    // the method below is used to show the menu to be looked at when the application starts
     public void printMenu() {
         String s = String.join("\n",
                 "Welcome To Mercury",
@@ -175,7 +175,6 @@ class Company {
 
 class Users{
     public Users(){
-
     }
 
     public void useSearch(UserX _user)throws IOException{
@@ -202,11 +201,10 @@ class Users{
 
 }
 
-
 class Merchant implements UserX {
     private BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     private String name;
-    private int id;
+    private final int id;
     private int numSlots = 10;
     private double reward=0;
     public static ArrayList<ArrayList<Object>> shared = new ArrayList<>();
@@ -363,18 +361,17 @@ class Merchant implements UserX {
         String s = String.join("\n",
                 "Name: "+this.name,
                 "Income: "+ (this.seeReward()*100+this.reward)
-                );
+        );
         System.out.println(s);
         return s;
     }
 
 }
 
-
 class Customers implements UserX {
-/// bought .
+    /// bought .
     private BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-//    private ArrayList<ArrayList<Item>> bought = new ArrayList<>();
+    //    private ArrayList<ArrayList<Item>> bought = new ArrayList<>();
     private ArrayList<ArrayList<Object>> cart = new ArrayList<>();
     private ArrayList<ArrayList<Transact>> transacttions = new ArrayList<>();
     private String name;
@@ -572,7 +569,7 @@ class Customers implements UserX {
 
     public void printMenu(){
         String s = String.join("\n",
-               "1) Buy item",
+                "1) Buy item",
                 "2) Add item to cart",
                 "3) Exit");
         System.out.println(s);
@@ -593,7 +590,7 @@ class Customers implements UserX {
         String s = String.join("\n",
                 "Name: "+ this.name,
                 "numTransactions: "+ this.getNumTransactions()
-                );
+        );
         return s;
     }
 

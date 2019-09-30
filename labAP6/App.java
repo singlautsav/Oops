@@ -79,7 +79,7 @@ class Graph{
     }
 
     public Node search(int x){
-       return arr[x];
+        return arr[x];
     }
 }
 
@@ -173,7 +173,7 @@ class Game{
         }
 
     }
-    
+
     public void StartLocation(){
         String s = String.join("\n",
                 "You are at starting Location. Choose Path:",
@@ -287,8 +287,8 @@ class Game{
                 System.out.println("We won!!!!");
                 m.sethp(hpDef);
                 h.incxp(x);
-                SideKick ll = h.getSideKick(x);
-                ll.levup();
+//                SideKick ll = h.getSideKick(x);
+//                ll.levup();
                 skActive = specialActive(x);
                 h.reset(x);
 //                specialActive();
@@ -588,11 +588,11 @@ class LionFang extends Monster implements Xonster {
 
 abstract class Hero{
     protected int level = 1;
-//    protected int countMoves = 0;
+    //    protected int countMoves = 0;
     protected int xp = 25;
     protected int hp = 100;
     private int prevHp = 100;
-//    protected int temphp;
+    //    protected int temphp;
     protected int z;
     protected int a;
     protected boolean A;
@@ -602,14 +602,14 @@ abstract class Hero{
     protected int moveX = 0;
     protected int specialMoveCounter = 0;
 
-//    protected boolean isSideKickActive;
+    //    protected boolean isSideKickActive;
     protected ArrayList<SideKick> sk;
     protected ArrayList<SideKick> skSelected;
-//    protected Graph graph = new Graph(10);
-{
-    sk = new ArrayList<>();
-    skSelected = new ArrayList<>();
-}
+    //    protected Graph graph = new Graph(10);
+    {
+        sk = new ArrayList<>();
+        skSelected = new ArrayList<>();
+    }
 
 
     public int getHP(){
@@ -706,7 +706,7 @@ abstract class Hero{
     public boolean getCount(){
         return this.canActivate;
     }
-//    public  void restore(){
+    //    public  void restore(){
 //    }
     public abstract void SpecialPower(Object o)throws IOException;
     public void levelup(){
@@ -771,9 +771,9 @@ abstract class Hero{
 
 class Warrior extends Hero implements Xero {
     private final String userName;
-//    boolean activatePower;
+    //    boolean activatePower;
     { this.z = 10;
-    this.a = 3; }
+        this.a = 3; }
 
     @Override
     public void setSideKick()throws CloneNotSupportedException {
@@ -873,7 +873,7 @@ class Mage extends Hero implements Xero {
 //    public boolean SpecialActive;
 
     {this.z = 5;
-    this.a = 5;}
+        this.a = 5;}
     public Mage(String s){
         this.userName = s;
     }
@@ -928,7 +928,7 @@ class Mage extends Hero implements Xero {
         this.z+=1;
         this.a+=1;
     }
-//    @Override
+    //    @Override
     public void SpecialPower(Object o) throws IOException {
 //        this.SpecialActive = true;
         Monster x = (Monster) o;
@@ -973,10 +973,10 @@ class Mage extends Hero implements Xero {
 
 class Thief extends Hero implements Xero {
     private final String userName;
-//    public boolean activatePower;
+    //    public boolean activatePower;
     {this.z = 6;
-    this.a = 4;
-    this.hp = 100;}
+        this.a = 4;
+        this.hp = 100;}
     public Thief(String name){
         this.userName = name;
     }
@@ -1087,9 +1087,9 @@ class Thief extends Hero implements Xero {
 class Healer extends Hero implements Xero {
     private final String userName;
     {this.z = 4;
-    this.a = 8;}
+        this.a = 8;}
     public Healer(String s){
-            this.userName = s;
+        this.userName = s;
     }
 
     @Override
@@ -1144,7 +1144,7 @@ class Healer extends Hero implements Xero {
         return super.getCount();
     }
 
-//    @Override
+    //    @Override
     public void SpecialPower(Object o) throws IOException {
         Monster x = (Monster) o;
         if (!SpecialActive){
@@ -1249,7 +1249,7 @@ class Minions extends SideKick implements Cloneable{
         this.name = "Minion";
     }
 
-//    {int z = 8}
+    //    {int z = 8}
     public Minions(int v){
         this.xp = 5;
         this.xp += v;
